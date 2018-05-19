@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/remfath/server-manager/task"
+	"github.com/remfath/ssh-run/task"
 	"fmt"
 	"os"
 	"os/user"

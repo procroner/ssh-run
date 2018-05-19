@@ -3,7 +3,7 @@ package task
 import (
 	"io/ioutil"
 	"encoding/json"
-	"github.com/remfath/server-manager/connect"
+	"github.com/remfath/ssh-run/connect"
 )
 
 type Task struct {
