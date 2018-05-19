@@ -13,3 +13,5 @@ Todo
 - [ ] Log support
 - [ ] Task storage in database
 - [ ] Web api
+- [ ] Documentation
+- [ ] Add test file
