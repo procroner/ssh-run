@@ -1,4 +1,4 @@
-# sshrun - a tool for executing commands on remote server conveniently
+# sshrun - execute commands on remote server
 
 Introduction
 ------------
