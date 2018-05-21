@@ -11,6 +11,7 @@ Todo
 
 - [ ] CLI support
 - [ ] Log support
+- [ ] REPL support
 - [ ] Task storage in database
 - [ ] Web api
 - [ ] Documentation
