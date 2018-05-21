@@ -63,7 +63,7 @@ func parseConfigFile(configPath string) (map[string]*Job, error) {
 
 func (job *Job) Run() (result string, err error) {
 	if job.Status != STATUS_ENABLE {
-		return "", errors.New("")
+		return "", errors.New("job is disabled")
 	}
 
 	ser, err := server.Get(job.Server)
