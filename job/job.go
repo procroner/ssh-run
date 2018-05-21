@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"github.com/remfath/ssh-run/server"
+	"github.com/procroner/ssh-run/server"
 	"errors"
 	"fmt"
 	"github.com/olekukonko/tablewriter"

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/remfath/ssh-run/job"
-	"github.com/remfath/ssh-run/server"
+	"github.com/procroner/ssh-run/job"
+	"github.com/procroner/ssh-run/server"
 )
 
 func main() {
