@@ -9,7 +9,7 @@ import (
 	"errors"
 )
 
-const configPath = "/etc/sshrun/Server.json"
+const configPath = "/etc/sshrun/server.json"
 
 type Server struct {
 	Name           string `json:"name"`
@@ -62,7 +62,7 @@ func List() {
 	table.Render()
 }
 
-func GetServer(name string) (*Server, error) {
+func Get(name string) (*Server, error) {
 	server, ok := Servers[name]
 	if !ok {
 		return nil, errors.New("no Server found")

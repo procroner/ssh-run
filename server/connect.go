@@ -1,4 +1,4 @@
-package connect
+package server
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func RunCommandWithPass(user, host, pass, cmd string) (string, error) {
-	client, session, err := connectToHostWithPass(user, host, pass)
+	client, session, err := connectWithPass(user, host, pass)
 	if err != nil {
 		return "", err
 	}
@@ -16,7 +16,7 @@ func RunCommandWithPass(user, host, pass, cmd string) (string, error) {
 }
 
 func RunCommandAskPass(user, host, cmd string) (string, error) {
-	client, session, err := connectToHostAskPass(user, host)
+	client, session, err := connectAskPass(user, host)
 	if err != nil {
 		return "", err
 	}
@@ -25,7 +25,7 @@ func RunCommandAskPass(user, host, cmd string) (string, error) {
 }
 
 func RunCommandWithKey(user, host, privateKeyPath, cmd string) (string, error) {
-	client, session, err := connectToHostWithKey(user, host, privateKeyPath)
+	client, session, err := connectWithKey(user, host, privateKeyPath)
 	if err != nil {
 		return "", err
 	}
@@ -41,7 +41,7 @@ func runCommand(session *ssh.Session, cmd string) (string, error) {
 	return string(output), nil
 }
 
-func connectToHostWithKey(user, host, privateKeyPath string) (*ssh.Client, *ssh.Session, error) {
+func connectWithKey(user, host, privateKeyPath string) (*ssh.Client, *ssh.Session, error) {
 	buffer, err := ioutil.ReadFile(privateKeyPath)
 	if err != nil {
 		return nil, nil, err
@@ -55,25 +55,25 @@ func connectToHostWithKey(user, host, privateKeyPath string) (*ssh.Client, *ssh.
 		User: user,
 		Auth: []ssh.AuthMethod{ssh.PublicKeys(key)},
 	}
-	return connectToHost(sshConfig, host)
+	return connect(sshConfig, host)
 }
 
-func connectToHostAskPass(user, host string) (*ssh.Client, *ssh.Session, error) {
+func connectAskPass(user, host string) (*ssh.Client, *ssh.Session, error) {
 	var pass string
 	fmt.Print("Password: ")
 	fmt.Scanf("%s\n", &pass)
-	return connectToHostWithPass(user, host, pass)
+	return connectWithPass(user, host, pass)
 }
 
-func connectToHostWithPass(user, host, pass string) (*ssh.Client, *ssh.Session, error) {
+func connectWithPass(user, host, pass string) (*ssh.Client, *ssh.Session, error) {
 	sshConfig := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{ssh.Password(pass)},
 	}
-	return connectToHost(sshConfig, host)
+	return connect(sshConfig, host)
 }
 
-func connectToHost(sshConfig *ssh.ClientConfig, host string) (*ssh.Client, *ssh.Session, error) {
+func connect(sshConfig *ssh.ClientConfig, host string) (*ssh.Client, *ssh.Session, error) {
 	sshConfig.HostKeyCallback = ssh.InsecureIgnoreHostKey()
 	client, err := ssh.Dial("tcp", host, sshConfig)
 	if err != nil {

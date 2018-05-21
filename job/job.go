@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"github.com/remfath/ssh-run/server"
-	"github.com/remfath/ssh-run/connect"
 	"errors"
 	"fmt"
 )
@@ -58,17 +57,22 @@ func (job *Job) Run() (result string, err error) {
 		return "", errors.New("")
 	}
 
-	ser, err := server.GetServer(job.Server)
+	ser, err := server.Get(job.Server)
 	if err != nil {
 		log.Fatalf("ser %s not found", job.Server)
+		return "", errors.New("server not found")
 	}
+
 	if ser.AuthType == "pass" {
-		result, err = connect.RunCommandWithPass(ser.User, ser.Host, ser.Pass, job.Command)
+		if ser.Pass == "" {
+			return server.RunCommandAskPass(ser.User, ser.Host, job.Command)
+		}
+		return server.RunCommandWithPass(ser.User, ser.Host, ser.Pass, job.Command)
 	}
 	if ser.AuthType == "key" {
-		result, err = connect.RunCommandWithKey(ser.User, ser.Host, ser.PrivateKeyPath, job.Command)
+		return server.RunCommandWithKey(ser.User, ser.Host, ser.PrivateKeyPath, job.Command)
 	}
-	return
+	return "", errors.New("")
 }
 
 func RunAll() {
