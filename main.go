@@ -7,5 +7,6 @@ import (
 
 func main() {
 	server.List()
+	job.List()
 	job.RunAll()
 }

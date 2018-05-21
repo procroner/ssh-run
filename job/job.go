@@ -8,6 +8,7 @@ import (
 	"github.com/remfath/ssh-run/server"
 	"errors"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 )
 
 const configPath = "/etc/sshrun/job.json"
@@ -19,6 +20,14 @@ const (
 	STATUS_STOP
 	STATUS_WATING
 )
+
+var statusDesc = map[int]string{
+	0: "disable",
+	1: "enable",
+	2: "running",
+	3: "stop",
+	4: "waiting",
+}
 
 type Job struct {
 	Name    string `json:"name"`
@@ -83,4 +92,24 @@ func RunAll() {
 		}
 		fmt.Println(result)
 	}
+}
+
+func List() {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Name", "Server", "Command", "Status"})
+	for _, job := range Jobs {
+		ser, err := server.Get(job.Server)
+		if err != nil {
+			log.Fatalf("ser %s not found", job.Server)
+			return
+		}
+		row := []string{
+			job.Name,
+			ser.Host,
+			job.Command,
+			statusDesc[job.Status],
+		}
+		table.Append(row)
+	}
+	table.Render()
 }
