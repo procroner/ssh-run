@@ -38,3 +38,9 @@ func All() []Log {
 	db.Find(&logs)
 	return logs
 }
+
+func Create(log Log) {
+	db := coreDb.Connect()
+	defer db.Close()
+	db.Create(&log)
+}

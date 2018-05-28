@@ -11,11 +11,11 @@ func RunAll() {
 		result, err := job.Run()
 		fmt.Println("=====================================")
 		fmt.Printf("%s\n", job.Title)
-		fmt.Println("=====================================")
+		fmt.Println("------------------------------------")
 		if err != nil {
 			fmt.Printf("ERROR: %s\n", err)
 		}
 		fmt.Print(result)
-		fmt.Printf("------------------------------------\n\n")
+		fmt.Printf("=====================================\n\n")
 	}
 }

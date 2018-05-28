@@ -76,9 +76,9 @@ func Run() {
 
 	var tableName string
 	var cTableInit = &cobra.Command{
-		Use:   "init",
-		Short: "Init tables",
-		Long:  "Init tables including jobs, logs and servers",
+		Use:   "migrate",
+		Short: "Migrate tables",
+		Long:  "Migrate tables including jobs, logs and servers",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			cmdTable.InitTables(tableName)

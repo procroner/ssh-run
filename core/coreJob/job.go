@@ -6,6 +6,9 @@ import (
 	"github.com/procroner/ssh-run/core/coreServer/coreConnect"
 	"github.com/jinzhu/gorm"
 	"github.com/procroner/ssh-run/core/coreDb"
+	"time"
+	"github.com/procroner/ssh-run/core/coreLog"
+	"fmt"
 )
 
 const (
@@ -55,6 +58,8 @@ func All() []Job {
 }
 
 func (job *Job) Run() (result string, err error) {
+	startTime := time.Now()
+
 	if job.Status != STATUS_ENABLE {
 		return "", errors.New("job is disabled")
 	}
@@ -63,12 +68,27 @@ func (job *Job) Run() (result string, err error) {
 
 	if server.AuthType == "pass" {
 		if server.Pass == "" {
-			return coreConnect.RunCommandAskPass(server.User, server.Host, job.Command)
+			result, err = coreConnect.RunCommandAskPass(server.User, server.Host, job.Command)
 		}
-		return coreConnect.RunCommandWithPass(server.User, server.Host, server.Pass, job.Command)
+		result, err = coreConnect.RunCommandWithPass(server.User, server.Host, server.Pass, job.Command)
 	}
 	if server.AuthType == "key" {
-		return coreConnect.RunCommandWithKey(server.User, server.Host, server.PrivateKeyPath, job.Command)
+		result, err = coreConnect.RunCommandWithKey(server.User, server.Host, server.PrivateKeyPath, job.Command)
 	}
-	return "", errors.New("")
+	result, err = "", errors.New("")
+	endTime := time.Now()
+	var runStatus int
+	if err != nil {
+		runStatus = 1
+	}
+	log := coreLog.Log{
+		JobId:     int(job.ID),
+		StartTime: &startTime,
+		EndTime:   &endTime,
+		Output:    result,
+		Error:     fmt.Sprintf("%s", err),
+		Status:    runStatus,
+	}
+	coreLog.Create(log)
+	return
 }
