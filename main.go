@@ -1,12 +1,7 @@
 package main
 
-import (
-	"github.com/procroner/ssh-run/job"
-	"github.com/procroner/ssh-run/server"
-)
+import "github.com/procroner/ssh-run/cmd"
 
 func main() {
-	server.List()
-	job.List()
-	job.RunAll()
+	cmd.Run()
 }

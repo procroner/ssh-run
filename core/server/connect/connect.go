@@ -1,4 +1,4 @@
-package server
+package connect
 
 import (
 	"fmt"

@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"github.com/procroner/ssh-run/server"
 	"errors"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	"github.com/procroner/ssh-run/core/server"
+	"github.com/procroner/ssh-run/core/server/connect"
 )
 
 const configPath = "/etc/sshrun/job.json"
@@ -74,12 +75,12 @@ func (job *Job) Run() (result string, err error) {
 
 	if ser.AuthType == "pass" {
 		if ser.Pass == "" {
-			return server.RunCommandAskPass(ser.User, ser.Host, job.Command)
+			return connect.RunCommandAskPass(ser.User, ser.Host, job.Command)
 		}
-		return server.RunCommandWithPass(ser.User, ser.Host, ser.Pass, job.Command)
+		return connect.RunCommandWithPass(ser.User, ser.Host, ser.Pass, job.Command)
 	}
 	if ser.AuthType == "key" {
-		return server.RunCommandWithKey(ser.User, ser.Host, ser.PrivateKeyPath, job.Command)
+		return connect.RunCommandWithKey(ser.User, ser.Host, ser.PrivateKeyPath, job.Command)
 	}
 	return "", errors.New("")
 }
@@ -87,10 +88,14 @@ func (job *Job) Run() (result string, err error) {
 func RunAll() {
 	for _, job := range Jobs {
 		result, err := job.Run()
+		fmt.Println("=====================================")
+		fmt.Printf("%s\n", job.Name)
+		fmt.Println("=====================================")
 		if err != nil {
 			fmt.Printf("ERROR: %s\n", err)
 		}
-		fmt.Println(result)
+		fmt.Print(result)
+		fmt.Printf("------------------------------------\n\n")
 	}
 }
 
