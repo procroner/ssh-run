@@ -1,4 +1,4 @@
-package connect
+package coreConnect
 
 import (
 	"fmt"

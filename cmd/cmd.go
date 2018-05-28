@@ -2,57 +2,72 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/procroner/ssh-run/core/server"
-	"github.com/procroner/ssh-run/core/job"
-	"github.com/procroner/ssh-run/core/db"
+	"github.com/procroner/ssh-run/cmd/cmdServer"
+	"github.com/procroner/ssh-run/cmd/cmdJob"
+	"github.com/procroner/ssh-run/cmd/cmdTable"
 )
 
 func Run() {
-	var cmdServer = &cobra.Command{
-		Use:   "server [add|delete|edit|list]",
-		Short: "Add, delete, edit or list server",
+	//server command
+	var cServer = &cobra.Command{
+		Use:   "server [add|delete|edit|list|ping]",
+		Short: "Add, delete, edit, list or ping server",
 		Long:  "Command server is for server management, providing add, delete, edit or list commands",
 		Args:  cobra.MinimumNArgs(1),
 	}
 
-	var cmdServerList = &cobra.Command{
+	var cServerList = &cobra.Command{
 		Use:   "list",
 		Short: "List servers",
 		Long:  "List all servers",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			server.List()
+			cmdServer.List()
 		},
 	}
 
-	var cmdJob = &cobra.Command{
+	var cServerPing = &cobra.Command{
+		Use:   "ping",
+		Short: "Ping servers",
+		Long:  "Ping all servers",
+		Args:  cobra.MinimumNArgs(0),
+		Run: func(cmd *cobra.Command, args []string) {
+			cmdServer.Ping()
+		},
+	}
+	cServer.AddCommand(cServerList, cServerPing)
+
+	//job command
+	var cJob = &cobra.Command{
 		Use:   "job [add|delete|edit|list]",
-		Short: "Add, delete, edit or list job",
+		Short: "Add, delete, edit or list cmdJob",
 		Long:  "Command job is for job management, providing add, delete, edit or list commands",
 		Args:  cobra.MinimumNArgs(1),
 	}
 
-	var cmdJobList = &cobra.Command{
+	var cJobList = &cobra.Command{
 		Use:   "list",
 		Short: "List jobs",
 		Long:  "List all jobs",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			job.List()
+			cmdJob.List()
 		},
 	}
 
-	var cmdJobRun = &cobra.Command{
+	var cJobRun = &cobra.Command{
 		Use:   "run",
 		Short: "Run all jobs",
 		Long:  "Run all jobs",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			job.RunAll()
+			cmdJob.RunAll()
 		},
 	}
+	cJob.AddCommand(cJobList, cJobRun)
 
-	var cmdTable = &cobra.Command{
+	//table command
+	var cTable = &cobra.Command{
 		Use:   "table",
 		Short: "Table management",
 		Long:  "Init tables",
@@ -60,21 +75,20 @@ func Run() {
 	}
 
 	var tableName string
-	var cmdTableInit = &cobra.Command{
+	var cTableInit = &cobra.Command{
 		Use:   "init",
 		Short: "Init tables",
 		Long:  "Init tables including jobs, logs and servers",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			db.InitTables(tableName)
+			cmdTable.InitTables(tableName)
 		},
 	}
-	cmdTableInit.Flags().StringVarP(&tableName, "table", "t", "", "tables names to init, multiple tables separated by comma")
+	cTableInit.Flags().StringVarP(&tableName, "table", "t", "", "tables names to init, multiple tables separated by comma")
+
+	cTable.AddCommand(cTableInit)
 
 	var rootCmd = &cobra.Command{Use: "ssh-run"}
-	rootCmd.AddCommand(cmdServer, cmdJob, cmdTable)
-	cmdServer.AddCommand(cmdServerList)
-	cmdJob.AddCommand(cmdJobList, cmdJobRun)
-	cmdTable.AddCommand(cmdTableInit)
+	rootCmd.AddCommand(cServer, cJob, cTable)
 	rootCmd.Execute()
 }

@@ -1,0 +1,5 @@
+package cmdServer
+
+func Ping() {
+
+}
