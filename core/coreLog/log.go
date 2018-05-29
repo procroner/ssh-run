@@ -9,10 +9,11 @@ import (
 type Log struct {
 	gorm.Model
 	JobId     int
+	Command   string `gorm:"type:longtext"`
 	StartTime *time.Time
 	EndTime   *time.Time
-	Output    string
-	Error     string
+	Output    string `gorm:"type:longtext"`
+	Error     string `gorm:"type:longtext"`
 	Input     string
 	Status    int
 }

@@ -75,18 +75,18 @@ func Run() {
 	}
 
 	var tableName string
-	var cTableInit = &cobra.Command{
+	var cTableMigrate = &cobra.Command{
 		Use:   "migrate",
 		Short: "Migrate tables",
 		Long:  "Migrate tables including jobs, logs and servers",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			cmdTable.InitTables(tableName)
+			cmdTable.MigrateTables(tableName)
 		},
 	}
-	cTableInit.Flags().StringVarP(&tableName, "table", "t", "", "tables names to init, multiple tables separated by comma")
+	cTableMigrate.Flags().StringVarP(&tableName, "table", "t", "", "tables names to init, multiple tables separated by comma")
 
-	cTable.AddCommand(cTableInit)
+	cTable.AddCommand(cTableMigrate)
 
 	var rootCmd = &cobra.Command{Use: "ssh-run"}
 	rootCmd.AddCommand(cServer, cJob, cTable)

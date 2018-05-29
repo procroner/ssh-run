@@ -10,7 +10,7 @@ import (
 	"errors"
 )
 
-func InitTables(tables string) {
+func MigrateTables(tables string) {
 	if tables == "" {
 		coreServer.Migrate()
 		coreJob.Migrate()

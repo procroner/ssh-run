@@ -2,13 +2,13 @@ package coreJob
 
 import (
 	"errors"
-	"github.com/procroner/ssh-run/core/coreServer"
-	"github.com/procroner/ssh-run/core/coreServer/coreConnect"
 	"github.com/jinzhu/gorm"
 	"github.com/procroner/ssh-run/core/coreDb"
 	"time"
 	"github.com/procroner/ssh-run/core/coreLog"
 	"fmt"
+	"github.com/procroner/ssh-run/core/coreServer"
+	"github.com/procroner/ssh-run/core/coreServer/coreConnect"
 )
 
 const (
@@ -31,7 +31,7 @@ type Job struct {
 	gorm.Model
 	Title    string
 	ServerId int
-	Command  string
+	Command  string `gorm:"type:longtext"`
 	Status   int
 }
 
@@ -61,33 +61,41 @@ func (job *Job) Run() (result string, err error) {
 	startTime := time.Now()
 
 	if job.Status != STATUS_ENABLE {
-		return "", errors.New("job is disabled")
-	}
+		result, err = "", errors.New("job is disabled")
+	} else {
+		server := coreServer.Query(job.ServerId)
 
-	server := coreServer.Query(job.ServerId)
-
-	if server.AuthType == "pass" {
-		if server.Pass == "" {
-			result, err = coreConnect.RunCommandAskPass(server.User, server.Host, job.Command)
+		if server.AuthType == "pass" {
+			if server.Pass == "" {
+				result, err = coreConnect.RunCommandAskPass(server.User, server.Host, job.Command)
+			}
+			result, err = coreConnect.RunCommandWithPass(server.User, server.Host, server.Pass, job.Command)
+		} else if server.AuthType == "key" {
+			result, err = coreConnect.RunCommandWithKey(server.User, server.Host, server.PrivateKeyPath, job.Command)
+		} else {
+			result, err = "", errors.New("auth type is not allowed")
 		}
-		result, err = coreConnect.RunCommandWithPass(server.User, server.Host, server.Pass, job.Command)
 	}
-	if server.AuthType == "key" {
-		result, err = coreConnect.RunCommandWithKey(server.User, server.Host, server.PrivateKeyPath, job.Command)
-	}
-	result, err = "", errors.New("")
+
 	endTime := time.Now()
 	var runStatus int
 	if err != nil {
 		runStatus = 1
 	}
+
+	var errMsg string
+	if err != nil {
+		errMsg = fmt.Sprintf("%s", err)
+	}
+
 	log := coreLog.Log{
 		JobId:     int(job.ID),
 		StartTime: &startTime,
 		EndTime:   &endTime,
 		Output:    result,
-		Error:     fmt.Sprintf("%s", err),
+		Error:     errMsg,
 		Status:    runStatus,
+		Command:   job.Command,
 	}
 	coreLog.Create(log)
 	return
