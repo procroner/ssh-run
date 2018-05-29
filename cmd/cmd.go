@@ -55,15 +55,17 @@ func Run() {
 		},
 	}
 
+	var jobId int
 	var cJobRun = &cobra.Command{
 		Use:   "run",
 		Short: "Run all jobs",
 		Long:  "Run all jobs",
 		Args:  cobra.MinimumNArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			cmdJob.RunAll()
+			cmdJob.Run(jobId)
 		},
 	}
+	cJobRun.Flags().IntVarP(&jobId, "job", "j", 0, "jobs that willing be run, separated by comma")
 	cJob.AddCommand(cJobList, cJobRun)
 
 	//table command

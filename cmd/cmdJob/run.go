@@ -5,7 +5,7 @@ import (
 	"github.com/procroner/ssh-run/core/coreJob"
 )
 
-func RunAll() {
+func runAll() {
 	jobs := coreJob.All()
 	for _, job := range jobs {
 		result, err := job.Run()
@@ -17,5 +17,14 @@ func RunAll() {
 			fmt.Println(result)
 		}
 		fmt.Printf("\n\n")
+	}
+}
+
+func Run(jobId int) {
+	if jobId == 0 {
+		runAll()
+	} else {
+		job := coreJob.Query(jobId)
+		job.Run()
 	}
 }

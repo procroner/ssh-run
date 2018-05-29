@@ -41,11 +41,11 @@ func Migrate() {
 	db.AutoMigrate(&Job{})
 }
 
-func Query(serverId int) Job {
+func Query(jobId int) Job {
 	db := coreDb.Connect()
 	defer db.Close()
 	var job Job
-	db.First(&job, serverId)
+	db.First(&job, jobId)
 	return job
 }
 
